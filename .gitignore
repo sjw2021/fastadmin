@@ -2,7 +2,7 @@
 /.vscode
 *.log
 .env
-config/install/lock/install.lock
+#iconfig/install/lock/install.lock
 /public/upload
 /public/docs
 runtime/admin
@@ -15,4 +15,4 @@ public/WowOss.exe
 app/index/controller/Test.php
 composer.phar
 app/test/
-vendor
+#vendor
