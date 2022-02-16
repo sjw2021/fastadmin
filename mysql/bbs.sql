@@ -11,11 +11,69 @@
  Target Server Version : 80026
  File Encoding         : 65001
 
- Date: 13/02/2022 23:33:33
+ Date: 16/02/2022 22:54:09
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for attachments
+-- ----------------------------
+DROP TABLE IF EXISTS `attachments`;
+CREATE TABLE `attachments` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '附件 id',
+  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'uuid',
+  `user_id` bigint unsigned NOT NULL COMMENT '用户 id',
+  `type_id` bigint unsigned NOT NULL DEFAULT '0' COMMENT '类型数据ID(post_id,dialog_message_id…)',
+  `order` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '附件排序',
+  `type` smallint unsigned NOT NULL DEFAULT '0' COMMENT '附件类型(0帖子附件，1帖子图片，2帖子视频，3帖子音频，4消息图片)',
+  `is_remote` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否远程附件',
+  `is_approved` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '是否合法',
+  `attachment` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '文件系统生成的名称',
+  `file_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '文件路径',
+  `file_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '文件原名称',
+  `file_size` int unsigned NOT NULL DEFAULT '0' COMMENT '文件大小',
+  `file_width` bigint unsigned NOT NULL DEFAULT '0' COMMENT '宽度',
+  `file_height` bigint unsigned NOT NULL DEFAULT '0' COMMENT '高度',
+  `file_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '文件类型',
+  `ip` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'ip 地址',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+-- Records of attachments
+-- ----------------------------
+BEGIN;
+COMMIT;
+
+-- ----------------------------
+-- Table structure for categories
+-- ----------------------------
+DROP TABLE IF EXISTS `categories`;
+CREATE TABLE `categories` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '分类 id',
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '分类名称',
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '分类描述',
+  `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '分类图标',
+  `sort` smallint unsigned NOT NULL DEFAULT '0' COMMENT '显示顺序',
+  `property` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '属性：0 正常 1 首页展示',
+  `thread_count` int unsigned NOT NULL DEFAULT '0' COMMENT '主题数',
+  `moderators` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '分类版主',
+  `ip` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'ip 地址',
+  `parentid` bigint unsigned NOT NULL DEFAULT '0' COMMENT '所属一级分类的ID',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+-- Records of categories
+-- ----------------------------
+BEGIN;
+COMMIT;
 
 -- ----------------------------
 -- Table structure for mall_cate
@@ -78,6 +136,169 @@ INSERT INTO `mall_goods` VALUES (9, 9, '电脑', 'http://admin.host/upload/20200
 COMMIT;
 
 -- ----------------------------
+-- Table structure for notification_timing
+-- ----------------------------
+DROP TABLE IF EXISTS `notification_timing`;
+CREATE TABLE `notification_timing` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '自增长id',
+  `notice_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '模板唯一标识ID',
+  `user_id` bigint unsigned NOT NULL COMMENT '接收通知的用户id',
+  `number` int unsigned NOT NULL DEFAULT '0' COMMENT '通知条数',
+  `data` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '通知数据',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `expired_at` timestamp NULL DEFAULT NULL COMMENT '过期时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+-- Records of notification_timing
+-- ----------------------------
+BEGIN;
+COMMIT;
+
+-- ----------------------------
+-- Table structure for notification_tpls
+-- ----------------------------
+DROP TABLE IF EXISTS `notification_tpls`;
+CREATE TABLE `notification_tpls` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `notice_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '模板唯一标识ID',
+  `status` tinyint NOT NULL DEFAULT '0' COMMENT '模板状态:1开启0关闭',
+  `type` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '通知类型:0系统1微信2短信',
+  `type_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '类型名称',
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '标题',
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '内容',
+  `vars` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '可选的变量',
+  `template_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '模板ID',
+  `first_data` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'first.DATA',
+  `keywords_data` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'keywords.DATA',
+  `remark_data` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'remark.DATA',
+  `color` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'data color',
+  `redirect_type` tinyint NOT NULL DEFAULT '0' COMMENT '跳转类型：0无跳转 1跳转H5 2跳转小程序',
+  `redirect_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '跳转地址',
+  `page_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '跳转路由',
+  `is_error` tinyint NOT NULL DEFAULT '0' COMMENT '模板是否配置错误',
+  `error_msg` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '错误信息',
+  `push_type` tinyint NOT NULL DEFAULT '0' COMMENT '消息推送类型(0:即时推送,1:间隔推送)',
+  `delay_time` int unsigned NOT NULL DEFAULT '0' COMMENT '间隔推送延迟时间(秒)',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_notice_id` (`notice_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=103 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+-- Records of notification_tpls
+-- ----------------------------
+BEGIN;
+COMMIT;
+
+-- ----------------------------
+-- Table structure for notifications
+-- ----------------------------
+DROP TABLE IF EXISTS `notifications`;
+CREATE TABLE `notifications` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '通知 id',
+  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '通知类型',
+  `notifiable_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `notifiable_id` bigint unsigned NOT NULL,
+  `data` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '通知内容',
+  `read_time` datetime DEFAULT NULL COMMENT '通知阅读时间',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `notifications_notifiable_type_notifiable_id_index` (`notifiable_type`,`notifiable_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+-- Records of notifications
+-- ----------------------------
+BEGIN;
+COMMIT;
+
+-- ----------------------------
+-- Table structure for post_user
+-- ----------------------------
+DROP TABLE IF EXISTS `post_user`;
+CREATE TABLE `post_user` (
+  `post_id` bigint unsigned NOT NULL COMMENT '帖子 id',
+  `user_id` bigint unsigned NOT NULL COMMENT '用户 id',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`post_id`,`user_id`),
+  KEY `post_user_user_id_foreign` (`user_id`),
+  CONSTRAINT `post_user_post_id_foreign` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `post_user_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+-- Records of post_user
+-- ----------------------------
+BEGIN;
+COMMIT;
+
+-- ----------------------------
+-- Table structure for posts
+-- ----------------------------
+DROP TABLE IF EXISTS `posts`;
+CREATE TABLE `posts` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '回复 id',
+  `user_id` bigint unsigned DEFAULT NULL COMMENT '发表用户 id',
+  `thread_id` bigint unsigned DEFAULT NULL COMMENT '关联主题 id',
+  `reply_post_id` bigint unsigned DEFAULT NULL COMMENT '回复 id',
+  `reply_user_id` bigint unsigned DEFAULT NULL COMMENT '回复用户 id',
+  `comment_post_id` bigint unsigned DEFAULT NULL COMMENT '评论回复 id',
+  `comment_user_id` bigint unsigned DEFAULT NULL COMMENT '评论回复用户 id',
+  `content` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '内容',
+  `ip` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'ip 地址',
+  `port` int unsigned NOT NULL DEFAULT '0' COMMENT '端口',
+  `reply_count` int unsigned NOT NULL DEFAULT '0' COMMENT '关联回复数',
+  `like_count` int unsigned NOT NULL DEFAULT '0' COMMENT '喜欢数',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  `deleted_user_id` bigint unsigned DEFAULT NULL COMMENT '删除用户 id',
+  `is_first` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否首个回复',
+  `is_comment` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否是回复回帖的内容',
+  `is_approved` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '是否合法',
+  PRIMARY KEY (`id`),
+  KEY `posts_user_id_foreign` (`user_id`),
+  KEY `posts_deleted_user_id_foreign` (`deleted_user_id`),
+  KEY `posts_thread_id_index` (`thread_id`),
+  KEY `idx_reply_post_id` (`reply_post_id`),
+  CONSTRAINT `posts_deleted_user_id_foreign` FOREIGN KEY (`deleted_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `posts_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+-- Records of posts
+-- ----------------------------
+BEGIN;
+COMMIT;
+
+-- ----------------------------
+-- Table structure for reports
+-- ----------------------------
+DROP TABLE IF EXISTS `reports`;
+CREATE TABLE `reports` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '举报 id',
+  `user_id` bigint unsigned NOT NULL DEFAULT '0' COMMENT '用户 id',
+  `thread_id` bigint unsigned NOT NULL DEFAULT '0' COMMENT '主题 id',
+  `post_id` bigint unsigned NOT NULL DEFAULT '0' COMMENT '回复 id',
+  `type` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '举报类型:0个人主页 1主题 2评论/回复',
+  `reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '举报理由',
+  `status` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '举报状态:1未处理 2已处理',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_user` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+-- Records of reports
+-- ----------------------------
+BEGIN;
+COMMIT;
+
+-- ----------------------------
 -- Table structure for system_admin
 -- ----------------------------
 DROP TABLE IF EXISTS `system_admin`;
@@ -104,7 +325,7 @@ CREATE TABLE `system_admin` (
 -- Records of system_admin
 -- ----------------------------
 BEGIN;
-INSERT INTO `system_admin` VALUES (1, NULL, 'https://lxn-99php.oss-cn-shenzhen.aliyuncs.com/upload/20191111/28cefa547f573a951bcdbbeb1396b06f.jpg', 'admin', 'ed696eb5bba1f7460585cc6975e6cf9bf24903dd', 'admin', 'admin', 3, 0, 1, 1644742046, 1644765096, NULL);
+INSERT INTO `system_admin` VALUES (1, NULL, 'https://lxn-99php.oss-cn-shenzhen.aliyuncs.com/upload/20191111/28cefa547f573a951bcdbbeb1396b06f.jpg', 'admin', 'ed696eb5bba1f7460585cc6975e6cf9bf24903dd', 'admin', 'admin', 4, 0, 1, 1644742046, 1644990559, NULL);
 COMMIT;
 
 -- ----------------------------
@@ -238,7 +459,7 @@ CREATE TABLE `system_log_202202` (
   `useragent` varchar(255) DEFAULT '' COMMENT 'User-Agent',
   `create_time` int DEFAULT NULL COMMENT '操作时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=637 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=COMPACT COMMENT='后台操作日志表 - 202202';
+) ENGINE=InnoDB AUTO_INCREMENT=638 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=COMPACT COMMENT='后台操作日志表 - 202202';
 
 -- ----------------------------
 -- Records of system_log_202202
@@ -251,6 +472,7 @@ INSERT INTO `system_log_202202` VALUES (633, NULL, '/admin/login/index', 'post',
 INSERT INTO `system_log_202202` VALUES (634, 1, '/admin/system.config/save', 'post', '', '{\"site_name\":\"后台系统\",\"site_ico\":\"https:\\/\\/lxn-99php.oss-cn-shenzhen.aliyuncs.com\\/upload\\/20191111\\/46d7384f04a3bed331715e86a4095d15.jpg\",\"file\":\"\",\"site_version\":\"2.0.0\",\"site_beian\":\"填你的\",\"site_copyright\":\"填你的\"}', '127.0.0.1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36', 1644765077);
 INSERT INTO `system_log_202202` VALUES (635, NULL, '/admin/login/index', 'post', '', '{\"username\":\"admin\",\"password\":\"***********\",\"keep_login\":\"1\"}', '127.0.0.1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36', 1644765096);
 INSERT INTO `system_log_202202` VALUES (636, 1, '/admin/system.config/save', 'post', '', '{\"logo_title\":\"后台\",\"logo_image\":\"\\/favicon.ico\",\"file\":\"\"}', '127.0.0.1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36', 1644765116);
+INSERT INTO `system_log_202202` VALUES (637, NULL, '/admin/login/index.html', 'post', '', '{\"username\":\"admin\",\"password\":\"***********\",\"keep_login\":\"1\"}', '127.0.0.1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36', 1644990559);
 COMMIT;
 
 -- ----------------------------
@@ -459,6 +681,145 @@ INSERT INTO `system_uploadfile` VALUES (299, 'local', 'head.jpg', 'http://admin.
 INSERT INTO `system_uploadfile` VALUES (300, 'local', '896e5b87c9ca70e4.jpg', 'http://admin.host/upload/20200514/577c65f101639f53dbbc9e7aa346f81c.jpg', '', '', '', 0, 'image/jpeg', 0, 'jpg', '', 1589427798, NULL, NULL);
 INSERT INTO `system_uploadfile` VALUES (301, 'local', '896e5b87c9ca70e4.jpg', 'http://admin.host/upload/20200514/98fc09b0c4ad4d793a6f04bef79a0edc.jpg', '', '', '', 0, 'image/jpeg', 0, 'jpg', '', 1589427840, NULL, NULL);
 INSERT INTO `system_uploadfile` VALUES (302, 'local', '18811e7611c8f292.jpg', 'http://admin.host/upload/20200514/e1c6c9ef6a4b98b8f7d95a1a0191a2df.jpg', '', '', '', 0, 'image/jpeg', 0, 'jpg', '', 1589438645, NULL, NULL);
+COMMIT;
+
+-- ----------------------------
+-- Table structure for threads
+-- ----------------------------
+DROP TABLE IF EXISTS `threads`;
+CREATE TABLE `threads` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主题 id',
+  `user_id` bigint unsigned DEFAULT NULL COMMENT '创建用户 id',
+  `last_posted_user_id` bigint unsigned DEFAULT NULL COMMENT '最后回复用户 id',
+  `category_id` int unsigned DEFAULT NULL COMMENT '分类 id',
+  `type` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '类型：0普通 1长文 2视频 3图片',
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '标题',
+  `post_count` int unsigned NOT NULL DEFAULT '0' COMMENT '回复数',
+  `view_count` int unsigned NOT NULL DEFAULT '0' COMMENT '查看数',
+  `share_count` int unsigned NOT NULL DEFAULT '0' COMMENT '分享数',
+  `longitude` decimal(10,7) NOT NULL DEFAULT '0.0000000' COMMENT '经度',
+  `latitude` decimal(10,7) NOT NULL DEFAULT '0.0000000' COMMENT '纬度',
+  `address` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '地址',
+  `location` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '位置',
+  `last_posted_time` datetime DEFAULT NULL COMMENT '最新评论时间',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  `issue_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '帖子首次发布、草稿箱发布、审核通过发布，重新编辑内容发布，四种变更的时间记录',
+  `deleted_user_id` bigint unsigned DEFAULT NULL COMMENT '删除用户 id',
+  `is_approved` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '是否合法',
+  `is_sticky` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否置顶',
+  `is_essence` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否加精',
+  `is_site` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否推荐到首页（0否 1是）',
+  `is_anonymous` tinyint NOT NULL DEFAULT '0' COMMENT '是否匿名 0否 1是',
+  `is_display` tinyint NOT NULL DEFAULT '1' COMMENT '是否显示 0否 1是',
+  `is_red_packet` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否添加红包，0未添加，1添加',
+  `is_draft` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否为草稿，0不是，1是',
+  `source` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '0 站内;1 微博;2 贴吧;3 豆瓣',
+  PRIMARY KEY (`id`),
+  KEY `threads_user_id_foreign` (`user_id`),
+  KEY `threads_last_posted_user_id_foreign` (`last_posted_user_id`),
+  KEY `threads_deleted_user_id_foreign` (`deleted_user_id`),
+  KEY `idx_category_id` (`category_id`),
+  KEY `idx_is_sticky` (`is_sticky`),
+  CONSTRAINT `threads_deleted_user_id_foreign` FOREIGN KEY (`deleted_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `threads_last_posted_user_id_foreign` FOREIGN KEY (`last_posted_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `threads_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+-- Records of threads
+-- ----------------------------
+BEGIN;
+COMMIT;
+
+-- ----------------------------
+-- Table structure for topics
+-- ----------------------------
+DROP TABLE IF EXISTS `topics`;
+CREATE TABLE `topics` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '话题ID',
+  `user_id` bigint unsigned DEFAULT NULL COMMENT 'user_id',
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '话题名称',
+  `thread_count` int unsigned NOT NULL DEFAULT '0' COMMENT '主题数',
+  `view_count` int unsigned NOT NULL DEFAULT '0' COMMENT '阅读数',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `recommended` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否推荐',
+  `recommended_at` datetime DEFAULT NULL COMMENT '推荐时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+-- Records of topics
+-- ----------------------------
+BEGIN;
+COMMIT;
+
+-- ----------------------------
+-- Table structure for user_score_log
+-- ----------------------------
+DROP TABLE IF EXISTS `user_score_log`;
+CREATE TABLE `user_score_log` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL DEFAULT '0',
+  `type` int NOT NULL DEFAULT '0',
+  `score` bigint NOT NULL DEFAULT '0' COMMENT '变动积分',
+  `old_score` bigint NOT NULL DEFAULT '0' COMMENT '旧积分',
+  `new_score` bigint NOT NULL DEFAULT '0' COMMENT '新积分',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '时间',
+  PRIMARY KEY (`id`),
+  KEY `create_time` (`create_time`,`score`),
+  KEY `user_id` (`user_id`,`type`) USING BTREE,
+  KEY `type` (`type`,`create_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+-- ----------------------------
+-- Records of user_score_log
+-- ----------------------------
+BEGIN;
+COMMIT;
+
+-- ----------------------------
+-- Table structure for users
+-- ----------------------------
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '用户 id',
+  `username` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户名',
+  `password` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '密码',
+  `salt` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nickname` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户昵称',
+  `mobile` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '手机号',
+  `signature` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '签名',
+  `last_login_ip` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '最后登录 ip 地址',
+  `last_login_port` int unsigned NOT NULL DEFAULT '0' COMMENT '最后登录端口',
+  `register_ip` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '注册ip',
+  `reject_reason` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '审核拒绝原因',
+  `username_bout` int unsigned NOT NULL DEFAULT '0' COMMENT '用户名修改次数',
+  `thread_count` int unsigned NOT NULL DEFAULT '0' COMMENT '主题数',
+  `follow_count` int unsigned NOT NULL DEFAULT '0' COMMENT '关注数',
+  `fans_count` int unsigned NOT NULL DEFAULT '0' COMMENT '粉丝数',
+  `liked_count` int unsigned NOT NULL DEFAULT '0' COMMENT '点赞数',
+  `question_count` int unsigned NOT NULL DEFAULT '0' COMMENT '提问数',
+  `status` tinyint NOT NULL DEFAULT '1' COMMENT '用户状态：1=正常，2=禁用，3=审核中，4=审核不通过',
+  `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '头像地址',
+  `identity` char(18) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '身份证号码',
+  `realname` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '身份证姓名',
+  `last_login_time` datetime DEFAULT NULL COMMENT '最后登录时间',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `bind_type` tinyint NOT NULL DEFAULT '0' COMMENT '登录绑定类型；0：默认或微信；2：qq登录；',
+  `score` int NOT NULL DEFAULT '0' COMMENT '积分',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `users_username_unique` (`username`),
+  KEY `nickname` (`nickname`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+-- Records of users
+-- ----------------------------
+BEGIN;
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
